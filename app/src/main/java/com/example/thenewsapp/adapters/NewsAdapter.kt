@@ -54,8 +54,12 @@ class NewsAdapter:RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
         articleDateTime = holder.itemView.findViewById(R.id.articleDateTime)
 
         holder.itemView.apply {
-            Glide.with(this).load(article.url).into(articleImage)
-
+            Glide.with(this)
+                .load(article.urlToImage)
+                .fitCenter()
+                .placeholder(R.drawable.baseline_wifi_protected_setup_24) // Replace with your placeholder drawable
+                .error(R.drawable.img) // Replace with your error drawable
+                .into(articleImage)
             articleSource.text = article.source?.name
             articleTitle.text = article.title
             articleDescription.text = article.description
