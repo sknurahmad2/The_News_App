@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebViewClient
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.thenewsapp.R
 import com.example.thenewsapp.databinding.FragmentArticleBinding
@@ -16,14 +17,14 @@ import com.google.android.material.snackbar.Snackbar
 
 class ArticleFragment : Fragment(R.layout.fragment_article) {
 
-    lateinit var newsViewModel : NewsViewModel
+    private lateinit var newsViewModel : NewsViewModel
     val args : ArticleFragmentArgs by navArgs()
     lateinit var binding : FragmentArticleBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentArticleBinding.bind(view)
-
+        newsViewModel = ViewModelProvider(requireActivity())[NewsViewModel::class.java]
         newsViewModel = (activity as NewsActivity).newsViewModel
         val article = args.article
 
