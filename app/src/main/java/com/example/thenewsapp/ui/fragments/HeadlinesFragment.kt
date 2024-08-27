@@ -57,7 +57,7 @@ class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
                     hideErrorMessage()
                     response.data?.let {newsResponse ->
                         newsAdapter.differ.submitList(newsResponse.articles.toList())
-                        val totalPages = newsResponse.totalResults / Constants.QUERY_PAGE_SIZE + 2
+                        val totalPages = (newsResponse.totalResults) / Constants.QUERY_PAGE_SIZE
                         isLastPage = newsViewModel.headlinesPage == totalPages
                         if(isLastPage){
                             binding.recyclerHeadlines.setPadding(0,0,0,0)
@@ -102,7 +102,7 @@ class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
 
     private fun hideErrorMessage(){
         itemHeadlinesError.visibility = View.INVISIBLE
-        isError = true
+        isError = false
     }
 
     private fun showErrorMessage(message: String){
