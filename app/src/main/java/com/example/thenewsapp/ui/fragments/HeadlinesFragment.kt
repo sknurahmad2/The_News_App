@@ -34,13 +34,14 @@ class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHeadlinesBinding.bind(view)
         newsViewModel = ViewModelProvider(requireActivity())[NewsViewModel::class.java]
+
+        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val errorView:View = inflater.inflate(R.layout.item_error , binding.root, false)
+
+        retryButton = view.findViewById(R.id.retryButton)
         errorText = view.findViewById(R.id.errorText)
         itemHeadlinesError = view.findViewById(R.id.itemHeadlinesError)
 
-        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val errorView:View = inflater.inflate(R.layout.item_error , null)
-
-        retryButton = errorView.findViewById(R.id.retryButton)
         setUpHeadlinesRecycler()
 
         newsAdapter.setOnItemClickListener {
@@ -78,6 +79,8 @@ class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
         })
 
         retryButton.setOnClickListener {
+            hideErrorMessage()
+            showProgressBar()
             newsViewModel.getHeadlines("us")
         }
     }
