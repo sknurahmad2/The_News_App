@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -30,8 +31,18 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
 
         binding.webView.apply {
             webViewClient = WebViewClient()
-            article.url?.let {
-                loadUrl(it)
+            article.url?.let {url ->
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true // Enable DOM storage API
+                    loadWithOverviewMode = true
+                    useWideViewPort = true
+                    setSupportZoom(true)
+                    builtInZoomControls = true
+                    displayZoomControls = false
+                    cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+                }
+                loadUrl(url)
             }
         }
 
