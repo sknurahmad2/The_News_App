@@ -1,16 +1,22 @@
 package com.example.thenewsapp.ui.fragments
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.thenewsapp.R
@@ -19,6 +25,7 @@ import com.example.thenewsapp.models.Article
 import com.example.thenewsapp.ui.NewsActivity
 import com.example.thenewsapp.ui.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlin.properties.Delegates
 
 class ArticleFragment : Fragment(R.layout.fragment_article) {
 
@@ -27,6 +34,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
     lateinit var binding : FragmentArticleBinding
     lateinit var progressBar: ProgressBar
     lateinit var article: Article
+    private var isLoading = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +43,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         newsViewModel = (activity as NewsActivity).newsViewModel
         article = args.article
         progressBar = binding.progressBar
+        isLoading = false
 
         setUpWebView()
 
@@ -43,31 +52,42 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
             Snackbar.make(view,"Article added to favourites",Snackbar.LENGTH_SHORT).show()
         }
     }
-
     private fun setUpWebView() {
         binding.webView.apply {
             webViewClient = object :WebViewClient(){
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
-                    binding.progressBar.visibility = View.VISIBLE
+                    if (!isLoading) {
+                        progressBar.visibility = View.VISIBLE
+                        isLoading = true
+                    }
                 }
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    binding.progressBar.visibility = View.GONE
+                    if (isLoading) {
+                        progressBar.visibility = View.GONE
+                        isLoading = false
+                    }
                 }
             }
-            article.url?.let {url ->
-                settings.apply {
-                    javaScriptEnabled = true
-                    domStorageEnabled = true // Enable DOM storage API
-                    loadWithOverviewMode = true
-                    useWideViewPort = true
-                    setSupportZoom(true)
-                    builtInZoomControls = true
-                    displayZoomControls = false
-                    cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+
+
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true // Enable DOM storage API
+                loadWithOverviewMode = true
+                useWideViewPort = true
+                setSupportZoom(true)
+                builtInZoomControls = true
+                displayZoomControls = false
+                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
+            }
+            article.url?.let { url ->
                 loadUrl(url)
             }
         }
