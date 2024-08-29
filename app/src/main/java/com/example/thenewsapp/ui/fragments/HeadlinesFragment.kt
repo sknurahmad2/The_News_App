@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.thenewsapp.R
 import com.example.thenewsapp.adapters.NewsAdapter
 import com.example.thenewsapp.databinding.FragmentHeadlinesBinding
+import com.example.thenewsapp.ui.NewsActivity
 import com.example.thenewsapp.ui.NewsViewModel
 import com.example.thenewsapp.util.Constants
 import com.example.thenewsapp.util.Resource
@@ -33,7 +34,7 @@ class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHeadlinesBinding.bind(view)
-        newsViewModel = ViewModelProvider(requireActivity())[NewsViewModel::class.java]
+        newsViewModel = (activity as NewsActivity).newsViewModel
 
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val errorView:View = inflater.inflate(R.layout.item_error , binding.root, false)
