@@ -38,12 +38,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         progressBar = binding.progressBar
         isLoading = false
 
-        if (article.id != null) {
-            setUpWebView(article)
-        } else {
-            Toast.makeText(requireContext(), "Article is missing", Toast.LENGTH_SHORT).show()
-            findNavController().popBackStack()
-        }
+        setUpWebView(article)
 
         binding.fab.setOnClickListener {
             newsViewModel.addToFavourites(article)
