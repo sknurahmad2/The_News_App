@@ -1,23 +1,17 @@
 package com.example.thenewsapp.ui.fragments
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.thenewsapp.R
 import com.example.thenewsapp.databinding.FragmentArticleBinding
@@ -25,7 +19,6 @@ import com.example.thenewsapp.models.Article
 import com.example.thenewsapp.ui.NewsActivity
 import com.example.thenewsapp.ui.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlin.properties.Delegates
 
 class ArticleFragment : Fragment(R.layout.fragment_article) {
 
@@ -45,14 +38,19 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         progressBar = binding.progressBar
         isLoading = false
 
-        setUpWebView()
+        if (article.id != null) {
+            setUpWebView(article)
+        } else {
+            Toast.makeText(requireContext(), "Article is missing", Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
+        }
 
         binding.fab.setOnClickListener {
             newsViewModel.addToFavourites(article)
             Snackbar.make(view,"Article added to favourites",Snackbar.LENGTH_SHORT).show()
         }
     }
-    private fun setUpWebView() {
+    private fun setUpWebView(article: Article) {
         binding.webView.apply {
             webViewClient = object :WebViewClient(){
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -87,7 +85,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
             }
-            article.url?.let { url ->
+            this@ArticleFragment.article.url?.let { url ->
                 loadUrl(url)
             }
         }
